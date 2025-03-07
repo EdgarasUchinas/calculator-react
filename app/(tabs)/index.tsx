@@ -1,55 +1,86 @@
-import { StyleSheet } from 'react-native';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import ButtonGroup from '@mui/material/ButtonGroup';
-import React from 'react';
+import React, { useState } from "react";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaView, View, StyleSheet } from "react-native";
+import { TextField, Button, ButtonGroup } from "@mui/material";
 
-import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
+export default function Calculator() {
+  const [calculatorInput, setCalculatorInput] = useState("");
 
-export default function HomeScreen() {
-
-
-    const [calculator_input, onChangeCalculatorInput] = React.useState(0);
-
-
-    function handleButtonClick(input: any) {
-        onChangeCalculatorInput(Number(calculator_input + input.target.value))
+  const handleButtonClick = (event: any) => {
+    const value = event.target.value;
+    if (value === "=") {
+      try {
+        setCalculatorInput(eval(calculatorInput).toString());
+      } catch {
+        setCalculatorInput("Error");
+      }
+    } 
+    else if (value === "C") {
+        setCalculatorInput("");
     }
+    else {
+      setCalculatorInput((prev) => prev + value);
+    }
+  };
 
-
-
-    return (
-        <SafeAreaProvider>
-            <SafeAreaView>
-                <TextField id="outlined-basic" variant="filled" value={calculator_input} />
-                <ButtonGroup variant="outlined" size="large" fullWidth aria-label="Basic button group">
-                    <Button onClick={handleButtonClick} value="7">7</Button>
-                    <Button onClick={handleButtonClick} value="8">8</Button>
-                    <Button onClick={handleButtonClick} value="9">9</Button>
-                    <Button onClick={handleButtonClick} value="÷">÷</Button>
-                </ButtonGroup>
-                <ButtonGroup variant="outlined" size="large" fullWidth aria-label="Basic button group">
-                    <Button onClick={handleButtonClick} value="4">4</Button>
-                    <Button onClick={handleButtonClick} value="5">5</Button>
-                    <Button onClick={handleButtonClick} value="6">6</Button>
-                    <Button onClick={handleButtonClick} value="-">-</Button>
-                </ButtonGroup>
-                <ButtonGroup variant="outlined"  size="large" fullWidth aria-label="Basic button group">
-                    <Button onClick={handleButtonClick} value="1">1</Button>
-                    <Button onClick={handleButtonClick} value="2">2</Button>
-                    <Button onClick={handleButtonClick} value="3">3</Button>
-                    <Button onClick={handleButtonClick} value="+">+</Button>
-                </ButtonGroup>
-                <ButtonGroup variant="outlined" size="large" fullWidth aria-label="Basic button group">
-                    <Button onClick={handleButtonClick} value="0">0</Button>
-                    <Button onClick={handleButtonClick} value=".">.</Button>
-                    <Button onClick={handleButtonClick} value="=">=</Button>
-                </ButtonGroup>
-            </SafeAreaView>
-        </SafeAreaProvider>
-    );
+  return (
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.inputContainer}>
+          <TextField
+            variant="filled"
+            value={calculatorInput}
+            fullWidth
+            inputProps={{ style: { fontSize: 36, textAlign: "right"} }}
+          />
+        </View>
+        <View style={styles.buttonContainer}>
+          {[
+            ["C"],
+            ["7", "8", "9", "/"],
+            ["4", "5", "6", "-"],
+            ["1", "2", "3", "+"],
+            ["0", ".", "="],
+          ].map((row, rowIndex) => (
+            <ButtonGroup
+              key={rowIndex}
+              variant="outlined"
+              size="large"
+              fullWidth
+              style={styles.buttonGroup}
+            >
+              {row.map((value) => (
+                <Button key={value} onClick={handleButtonClick} value={value} style={styles.button}>
+                  {value}
+                </Button>
+              ))}
+            </ButtonGroup>
+          ))}
+        </View>
+      </SafeAreaView>
+    </SafeAreaProvider>
+  );
 }
 
 const styles = StyleSheet.create({
-    
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    padding: 20,
+    backgroundColor: "#f5f5f5",
+  },
+  inputContainer: {
+    marginBottom: 20,
+  },
+  buttonContainer: {
+    flex: 1,
+    justifyContent: "flex-end"
+  },
+  buttonGroup: {
+    width: "100%",
+  },
+  button: {
+    flex: 1,
+    fontSize: 24,
+  },
 });
